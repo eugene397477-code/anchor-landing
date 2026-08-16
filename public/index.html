@@ -1,0 +1,613 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Anchor — Focus, with a crew</title>
+<meta name="description" content="Anchor pairs your work sessions with a small crew of real people — a shared timer, a quiet room, and someone who notices if you disappear." />
+<style>
+  :root{
+    --bg: #f2eee2;
+    --surface: #e8e1cf;
+    --surface-2: #fbf9f2;
+    --ink: #17232c;
+    --ink-soft: #4e5c64;
+    --ink-faint: #7c8890;
+    --accent: #a9702f;
+    --accent-ink: #fbf6ec;
+    --accent-2: #2f6a61;
+    --line: #cbbfa1;
+    --shadow: 0 1px 0 rgba(23,35,44,0.06);
+    --radius: 3px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg: #0c141c;
+      --surface: #121d28;
+      --surface-2: #0e1922;
+      --ink: #ede7d8;
+      --ink-soft: #a3b1ba;
+      --ink-faint: #6c7a83;
+      --accent: #d89a4e;
+      --accent-ink: #101820;
+      --accent-2: #6bab9e;
+      --line: #22303e;
+      --shadow: 0 1px 0 rgba(0,0,0,0.3);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg: #0c141c;
+    --surface: #121d28;
+    --surface-2: #0e1922;
+    --ink: #ede7d8;
+    --ink-soft: #a3b1ba;
+    --ink-faint: #6c7a83;
+    --accent: #d89a4e;
+    --accent-ink: #101820;
+    --accent-2: #6bab9e;
+    --line: #22303e;
+    --shadow: 0 1px 0 rgba(0,0,0,0.3);
+  }
+
+  *{ box-sizing: border-box; }
+  html{ -webkit-text-size-adjust: 100%; }
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,h2,h3{
+    font-family: "Iowan Old Style", "Palatino Linotype", Georgia, "Times New Roman", serif;
+    font-weight: 600;
+    color: var(--ink);
+    text-wrap: balance;
+    margin: 0;
+  }
+  .mono{
+    font-family: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+  a{ color: inherit; }
+  img,svg{ max-width:100%; display:block; }
+  .wrap{
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+  .eyebrow{
+    font-size: 12.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-2);
+    font-weight: 700;
+  }
+
+  /* ---------- header ---------- */
+  header{
+    position: sticky; top:0; z-index: 20;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav{
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 16px 28px;
+    max-width: 1080px; margin:0 auto;
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    font-family: "Iowan Old Style", Georgia, serif;
+    font-size: 19px; font-weight:700; letter-spacing: 0.01em;
+  }
+  .brand-mark{
+    width: 22px; height:22px; flex:none;
+  }
+  .navlinks{
+    display:flex; gap: 28px; font-size: 14.5px; color: var(--ink-soft);
+  }
+  .navlinks a{ text-decoration:none; }
+  .navlinks a:hover{ color: var(--ink); }
+  .navlinks a:focus-visible, a.btn:focus-visible, button:focus-visible{
+    outline: 2px solid var(--accent-2); outline-offset: 3px;
+  }
+  .nav-cta{
+    font-size: 14px; font-weight: 600;
+    padding: 9px 16px;
+    border: 1px solid var(--ink);
+    border-radius: var(--radius);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .nav-cta:hover{ background: var(--ink); color: var(--bg); }
+  @media (max-width: 720px){ .navlinks{ display:none; } }
+
+  /* ---------- hero ---------- */
+  .hero{
+    position: relative;
+    overflow: hidden;
+    padding: 84px 0 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .hero-inner{
+    display:grid; gap: 20px;
+    max-width: 680px;
+  }
+  .hero h1{
+    font-size: clamp(38px, 5.6vw, 62px);
+    line-height: 1.04;
+    letter-spacing: -0.01em;
+  }
+  .hero p.lede{
+    font-size: 18px;
+    color: var(--ink-soft);
+    max-width: 52ch;
+    margin: 4px 0 8px;
+  }
+  .cta-row{
+    display:flex; gap: 14px; align-items:center; flex-wrap: wrap;
+    margin-top: 6px;
+  }
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding: 13px 22px;
+    border-radius: var(--radius);
+    font-size: 15.5px; font-weight: 700;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+  }
+  .btn-primary{ background: var(--accent); color: var(--accent-ink); }
+  .btn-primary:hover{ background: color-mix(in srgb, var(--accent) 85%, black); }
+  .btn-ghost{ color: var(--ink); border-color: var(--ink); background: transparent; }
+  .btn-ghost:hover{ background: var(--ink); color: var(--bg); }
+  .proof-line{
+    font-size: 13.5px; color: var(--ink-faint);
+    margin-top: 4px;
+  }
+  .proof-line .mono{ color: var(--accent-2); font-weight: 600; }
+
+  .horizon{
+    margin-top: 56px;
+    height: 108px;
+    position: relative;
+  }
+  .horizon svg{ width:100%; height:100%; display:block; }
+  .horizon-line{
+    stroke: var(--accent-2);
+    stroke-width: 1.4;
+    fill: none;
+    opacity: 0.55;
+  }
+  .horizon-line.b{ opacity: 0.28; }
+  @media (prefers-reduced-motion: no-preference){
+    .horizon-line{ animation: drift 18s linear infinite; }
+    .horizon-line.b{ animation-duration: 26s; animation-direction: reverse; }
+  }
+  @keyframes drift{
+    from{ transform: translateX(0); }
+    to{ transform: translateX(-160px); }
+  }
+
+  /* ---------- section shell ---------- */
+  section{ padding: 76px 0; border-bottom: 1px solid var(--line); }
+  section:last-of-type{ border-bottom: none; }
+  .section-head{
+    max-width: 560px;
+    margin-bottom: 44px;
+  }
+  .section-head h2{
+    font-size: clamp(26px, 3.4vw, 34px);
+    margin-top: 8px;
+  }
+  .section-head p{ color: var(--ink-soft); margin-top: 10px; font-size: 16px; }
+
+  /* ---------- drift / problem ---------- */
+  .drift-grid{
+    display:grid; grid-template-columns: repeat(3,1fr); gap: 28px;
+  }
+  .drift-card{
+    padding: 22px 0 0;
+    border-top: 1px solid var(--line);
+  }
+  .drift-card .num{
+    font-size: 12.5px; color: var(--ink-faint);
+    margin-bottom: 10px;
+  }
+  .drift-card p{ color: var(--ink-soft); font-size: 15px; }
+  .drift-card strong{ color: var(--ink); display:block; margin-bottom: 6px; font-size: 16.5px; }
+  @media (max-width: 800px){ .drift-grid{ grid-template-columns: 1fr; } }
+
+  /* ---------- how it works ---------- */
+  .steps{ display:grid; gap: 0; }
+  .step{
+    display:grid; grid-template-columns: 84px 1fr; gap: 24px;
+    padding: 26px 0;
+    border-top: 1px solid var(--line);
+  }
+  .step:last-child{ border-bottom: 1px solid var(--line); }
+  .step-tag{
+    font-family: "Iowan Old Style", Georgia, serif;
+    font-size: 15px; font-style: italic; color: var(--accent-2);
+    padding-top: 2px;
+  }
+  .step h3{ font-size: 20px; margin-bottom: 6px; }
+  .step p{ color: var(--ink-soft); max-width: 56ch; }
+  @media (max-width: 640px){ .step{ grid-template-columns: 1fr; gap: 6px; } }
+
+  /* ---------- session preview ---------- */
+  .panel-wrap{ display:grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items:center; }
+  @media (max-width: 860px){ .panel-wrap{ grid-template-columns: 1fr; } }
+  .panel-copy p{ color: var(--ink-soft); }
+  .room-panel{
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 22px;
+    box-shadow: var(--shadow);
+  }
+  .room-top{
+    display:flex; align-items:center; justify-content:space-between;
+    font-size: 13px; color: var(--ink-faint);
+    padding-bottom: 16px; margin-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+  }
+  .live-dot{
+    display:inline-block; width:7px; height:7px; border-radius:50%;
+    background: var(--accent-2); margin-right: 7px;
+  }
+  @media (prefers-reduced-motion: no-preference){
+    .live-dot{ animation: pulse 2.2s ease-in-out infinite; }
+  }
+  @keyframes pulse{ 0%,100%{ opacity: 1; } 50%{ opacity: .35; } }
+  .timer{
+    font-size: 54px; font-weight: 600; letter-spacing: 0.01em;
+    color: var(--ink); text-align: center; padding: 6px 0 18px;
+  }
+  .crew-row{ display:flex; justify-content:center; gap: 10px; margin-bottom: 14px; }
+  .avatar{
+    width: 34px; height:34px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size: 12.5px; font-weight:700;
+    background: var(--surface); color: var(--ink-soft);
+    border: 1px solid var(--line);
+  }
+  .avatar.you{ background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+  .room-caption{ text-align:center; font-size: 13px; color: var(--ink-faint); }
+
+  /* ---------- log / testimonials ---------- */
+  .log{ display:grid; gap: 0; }
+  .log-entry{
+    display:grid; grid-template-columns: 96px 1fr; gap: 24px;
+    padding: 24px 0;
+    border-top: 1px solid var(--line);
+  }
+  .log-entry:last-child{ border-bottom: 1px solid var(--line); }
+  .log-day{ font-size: 13px; color: var(--ink-faint); padding-top: 3px; }
+  .log-entry blockquote{
+    margin: 0 0 8px;
+    font-family: "Iowan Old Style", Georgia, serif;
+    font-size: 18px; line-height: 1.5; font-style: italic;
+    color: var(--ink);
+  }
+  .log-entry cite{ font-style: normal; font-size: 13.5px; color: var(--ink-soft); }
+  @media (max-width: 640px){ .log-entry{ grid-template-columns: 1fr; gap: 6px; } }
+
+  /* ---------- pricing ---------- */
+  .plans{ display:grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media (max-width: 720px){ .plans{ grid-template-columns: 1fr; } }
+  .plan{
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 28px;
+    background: var(--surface-2);
+  }
+  .plan.featured{ border-color: var(--accent); position: relative; }
+  .plan-name{ font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); font-weight:700; }
+  .plan-price{ margin: 14px 0 6px; }
+  .plan-price .amount{ font-size: 40px; font-weight: 700; }
+  .plan-price .period{ color: var(--ink-faint); font-size: 14px; }
+  .plan-desc{ color: var(--ink-soft); font-size: 14.5px; margin-bottom: 20px; }
+  .plan ul{ list-style:none; margin: 0 0 24px; padding:0; display:grid; gap:10px; }
+  .plan li{ font-size: 14.5px; color: var(--ink-soft); padding-left: 18px; position:relative; }
+  .plan li::before{ content:"—"; position:absolute; left:0; color: var(--accent-2); }
+  .plan .btn{ width:100%; justify-content:center; }
+
+  /* ---------- faq ---------- */
+  .faq{ display:grid; gap: 0; max-width: 720px; }
+  .faq-item{ border-top: 1px solid var(--line); padding: 20px 0; }
+  .faq-item:last-child{ border-bottom: 1px solid var(--line); }
+  .faq-item h3{ font-size: 16.5px; font-weight: 600; margin-bottom: 8px; font-family: -apple-system, "Helvetica Neue", Arial, sans-serif; }
+  .faq-item p{ color: var(--ink-soft); font-size: 14.5px; }
+
+  /* ---------- final cta ---------- */
+  .final{
+    text-align:center;
+    padding: 88px 0;
+  }
+  .final h2{ font-size: clamp(28px,4vw,40px); margin-bottom: 10px; }
+  .final p{ color: var(--ink-soft); margin-bottom: 28px; }
+  .final .cta-row{ justify-content:center; }
+  .countdown{ color: var(--accent-2); font-weight: 700; }
+
+  /* ---------- footer ---------- */
+  footer{ padding: 40px 0 56px; }
+  .footer-row{
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap: 16px;
+    font-size: 13.5px; color: var(--ink-faint);
+  }
+  .footer-links{ display:flex; gap: 20px; }
+  .footer-links a{ text-decoration:none; color: var(--ink-faint); }
+  .footer-links a:hover{ color: var(--ink); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="12" cy="6" r="2.4" stroke="var(--accent)" stroke-width="1.6"/>
+        <path d="M12 8.4V19" stroke="var(--accent)" stroke-width="1.6"/>
+        <path d="M6 13c0 3.3 2.7 6 6 6s6-2.7 6-6" stroke="var(--accent)" stroke-width="1.6"/>
+        <path d="M9 9.5H12H15" stroke="var(--accent)" stroke-width="1.6"/>
+      </svg>
+      Anchor
+    </div>
+    <nav class="navlinks" aria-label="Primary">
+      <a href="#how">How it works</a>
+      <a href="#log">Log</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </nav>
+    <a class="nav-cta" href="#start">Drop anchor</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div class="hero-inner">
+        <p class="eyebrow">Live focus sessions</p>
+        <h1>Stop drifting alone.</h1>
+        <p class="lede">Anchor pairs your work block with a small crew of real people — a shared timer, a quiet room, and someone who notices if you disappear.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" id="start" href="#pricing">Drop anchor — it's free</a>
+          <a class="btn btn-ghost" href="#how">See how a session runs</a>
+        </div>
+        <p class="proof-line"><span class="mono">6,412</span> sessions logged this week · avg. <span class="mono">94</span> focused minutes per crew</p>
+      </div>
+    </div>
+    <div class="horizon" aria-hidden="true">
+      <svg viewBox="0 0 800 108" preserveAspectRatio="none">
+        <path class="horizon-line" d="M-100 70 C 40 40, 120 100, 260 60 S 480 20, 620 66 S 820 100, 960 50" />
+        <path class="horizon-line b" d="M-100 90 C 60 60, 160 110, 300 80 S 520 40, 660 86 S 860 110, 1000 70" />
+      </svg>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">The problem</p>
+        <h2>Working alone has a current, and it pulls the wrong way.</h2>
+      </div>
+      <div class="drift-grid">
+        <div class="drift-card">
+          <p class="num mono">01</p>
+          <strong>No one to drift in front of</strong>
+          <p>Open a tab, close it, open another. Nobody's watching, so nothing costs anything — and an hour goes missing.</p>
+        </div>
+        <div class="drift-card">
+          <p class="num mono">02</p>
+          <strong>Coworking is expensive theatre</strong>
+          <p>A desk and a coffee machine don't make you start. You still have to sit down and do the hard first ten minutes by yourself.</p>
+        </div>
+        <div class="drift-card">
+          <p class="num mono">03</p>
+          <strong>Willpower runs out by Wednesday</strong>
+          <p>Habit trackers and to-do apps only work until you miss a day. Anchor doesn't rely on you remembering to care.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">How it works</p>
+        <h2>Three moves, every session.</h2>
+        <p>No chat, no small talk, no camera filters. Just the quiet pressure of other people also doing the work.</p>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-tag">First</div>
+          <div>
+            <h3>Drop anchor</h3>
+            <p>Pick a slot. You're placed in a room with two to four others starting the same kind of work block — writing, code, admin, reading.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-tag">Then</div>
+          <div>
+            <h3>Work the tide</h3>
+            <p>Camera on, mic off. A shared timer counts the block down — 25 or 50 minutes. You see the room; the room sees you. That's the entire mechanism.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-tag">Last</div>
+          <div>
+            <h3>Log the session</h3>
+            <p>Sixty seconds at the end: say out loud what you did. It's added to your log and your streak — a record you can actually look back on.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap panel-wrap">
+      <div class="panel-copy">
+        <p class="eyebrow">Inside a room</p>
+        <h2 style="font-size: clamp(24px,3vw,30px); margin: 8px 0 14px;">What you actually see</h2>
+        <p>A timer, a handful of faces, and how many minutes are left in the block. No feed, no reactions, no notifications — the room is built to be forgettable so the work isn't.</p>
+      </div>
+      <div class="room-panel" aria-label="Example session room">
+        <div class="room-top">
+          <span><span class="live-dot" aria-hidden="true"></span>Room 04 · Deep Work</span>
+          <span class="mono">50:00 block</span>
+        </div>
+        <div class="timer mono" id="timerDisplay">24:16</div>
+        <div class="crew-row">
+          <div class="avatar you">You</div>
+          <div class="avatar">P</div>
+          <div class="avatar">M</div>
+          <div class="avatar">D</div>
+        </div>
+        <p class="room-caption">4 in the room · silent focus · ends 9:40 PM</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="log">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">The log</p>
+        <h2>What crews say after the block ends.</h2>
+      </div>
+      <div class="log">
+        <div class="log-entry">
+          <div class="log-day mono">Day 41</div>
+          <div>
+            <blockquote>"I used to open six tabs before I wrote a single sentence. Now I just don't — there isn't time before the room notices."</blockquote>
+            <cite>Priya N., freelance illustrator</cite>
+          </div>
+        </div>
+        <div class="log-entry">
+          <div class="log-day mono">Day 12</div>
+          <div>
+            <blockquote>"Cheaper than a coworking desk, and nobody's ever running late for it."</blockquote>
+            <cite>Marcus T., indie developer</cite>
+          </div>
+        </div>
+        <div class="log-entry">
+          <div class="log-day mono">Day 88</div>
+          <div>
+            <blockquote>"The sixty-second check-in is the whole trick. Saying what I did out loud makes it count in a way a checkbox never did."</blockquote>
+            <cite>Dana K., PhD candidate</cite>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="pricing">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Pricing</p>
+        <h2>Start free. Stay if it holds.</h2>
+      </div>
+      <div class="plans">
+        <div class="plan">
+          <p class="plan-name">Solo Crew</p>
+          <div class="plan-price"><span class="amount">$0</span> <span class="period">/ month</span></div>
+          <p class="plan-desc">Enough to find out if this actually works for you.</p>
+          <ul>
+            <li>3 sessions a week</li>
+            <li>25 &amp; 50 minute blocks</li>
+            <li>Session log &amp; streak</li>
+          </ul>
+          <a class="btn btn-ghost" href="#">Drop anchor free</a>
+        </div>
+        <div class="plan featured">
+          <p class="plan-name">Full Crew</p>
+          <div class="plan-price"><span class="amount">$9</span> <span class="period">/ month</span></div>
+          <p class="plan-desc">For anyone making this a permanent part of the week.</p>
+          <ul>
+            <li>Unlimited sessions</li>
+            <li>Recurring "moorings" — same crew, same slot</li>
+            <li>Full log history &amp; export</li>
+            <li>Priority room placement</li>
+          </ul>
+          <a class="btn btn-primary" href="#">Get Full Crew</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow">Questions</p>
+        <h2>Before you join a room.</h2>
+      </div>
+      <div class="faq">
+        <div class="faq-item">
+          <h3>Do I need my camera on?</h3>
+          <p>Yes. Camera on, mic off — that's the format. It's what makes the room work; without it, it's just a countdown timer in a tab.</p>
+        </div>
+        <div class="faq-item">
+          <h3>What if nobody else is in my room?</h3>
+          <p>We hold a minimum crew of two. If your room is short, we merge it into the next one starting within five minutes.</p>
+        </div>
+        <div class="faq-item">
+          <h3>Is this only for freelancers?</h3>
+          <p>No — students make up about a third of crews. Anyone doing solo, unsupervised work fits: writing, coding, reading, admin, studying.</p>
+        </div>
+        <div class="faq-item">
+          <h3>What time zone do rooms run in?</h3>
+          <p>All of them. Rooms open around the clock in 25- and 50-minute blocks, so there's almost always one starting soon.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="final">
+    <div class="wrap">
+      <p class="eyebrow">Ready when you are</p>
+      <h2>Your next room opens in <span class="countdown mono" id="nextRoom">6:40</span>.</h2>
+      <p>No download, no setup call. Pick a slot and show up.</p>
+      <div class="cta-row">
+        <a class="btn btn-primary" href="#start">Drop anchor — it's free</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap footer-row">
+    <span>© 2026 Anchor. A quiet place to do the work.</span>
+    <div class="footer-links">
+      <a href="#how">How it works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+      <a href="mailto:hello@anchor.work">hello@anchor.work</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var el = document.getElementById('timerDisplay');
+    var total = 24*60 + 16;
+    setInterval(function(){
+      total = total > 0 ? total - 1 : 49*60 + 59;
+      var m = Math.floor(total/60), s = total%60;
+      el.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+    }, 1000);
+
+    var nr = document.getElementById('nextRoom');
+    var t2 = 6*60 + 40;
+    setInterval(function(){
+      t2 = t2 > 0 ? t2 - 1 : 24*60 + 59;
+      var m = Math.floor(t2/60), s = t2%60;
+      nr.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+    }, 1000);
+  })();
+</script>
+
+</body>
+</html>
